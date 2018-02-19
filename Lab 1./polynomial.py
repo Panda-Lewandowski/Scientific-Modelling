@@ -92,10 +92,24 @@ class Polynomial:
                 ext.extend(ret.koef)
                 ret.koef = ext
 
-            i = ret.degree
-            while i != -1:
-                ret.koef[i] += other.koef[i]
-                i -= 1
+                i = ret.degree
+                while i != -1:
+                    ret.koef[i] += other.koef[i]
+                    i -= 1
+            elif other.degree < ret.degree:
+                buf = other.koef
+                diff = ret.degree - other.degree
+                ext = [0 for i in range(diff)]
+                ext.extend(buf)
+                i = ret.degree
+                while i != -1:
+                    ret.koef[i] += ext[i]
+                    i -= 1
+            else:
+                i = ret.degree
+                while i != -1:
+                    ret.koef[i] += other.koef[i]
+                    i -= 1
         else:
             raise Exception
         return ret
@@ -130,10 +144,17 @@ class Polynomial:
                 ext = [0 for i in range(diff)]
                 ext.extend(ret.koef)
                 ret.koef = ext
+            elif other.degree < ret.degree:
+                buf = other.koef
+                diff = ret.degree - other.degree
+                ext = [0 for i in range(diff)]
+                ext.extend(buf)
+            else:
+                ext = other.koef
 
             i = ret.degree
             while i != -1:
-                ret.koef[i] -= other.koef[i]
+                ret.koef[i] -= ext[i]
                 i -= 1
         else:
             raise Exception
@@ -169,10 +190,12 @@ class Polynomial:
     def __str__(self):
         i = self.degree
         prnt_str = ""
+        if not i:
+            prnt_str += "{0}".format(self.koef[0])
+            return prnt_str
         for k in self.koef:
             if k:
                 if not i:
-
                         prnt_str += " + {0}".format(k)
                 else:
                     if i != self.degree:
@@ -184,13 +207,26 @@ class Polynomial:
 
 if __name__ == "__main__":
     """Tests"""
-    l = Polynomial(2, [3, 4, 9])
-    p = Polynomial(4, [2, 0, 0, 6, 1])
-    print(l, "\n", p)
+    # l = Polynomial(2, [3, 4, 9])
+    # p = Polynomial(4, [2, 0, 0, 6, 1])
+    # print(l, "\n", p)
+    #
+    # print(l * l)
+    #
+    # l = l * l
+    #
+    # print(l.integral_variable_up(1))
 
-    print(l * l)
+    y = Polynomial(3, [1/3])
+    x = Polynomial(1, [1])
 
-    l = l * l
+    print(y.koef, x.koef)
 
-    print(l.integral_variable_up(1))
+    x2 = x ** 2
+
+    y2 = y ** 2
+
+    print(x2 + y2)
+
+
 
