@@ -1,3 +1,5 @@
+
+
 class Polynomial:
     def __init__(self, n, k=None):
         self.degree = n
@@ -7,7 +9,7 @@ class Polynomial:
             if len(k) > n:
                 k = k[:n + 1]
             elif len(k) < n:
-                k.extend([0 for i in range(n - len(k))])
+                k.extend([0.0 for i in range(n - len(k))])
             self.koef = [x for x in k]
             if len(self.koef) < self.degree + 1:
                 self.koef.extend([0 for i in range(self.degree - len(self.koef) + 1)])
@@ -18,7 +20,7 @@ class Polynomial:
                 self.koef[i] *= other
         elif isinstance(other, Polynomial):
             diff = other.degree + self.degree
-            ext = [0 for i in range(diff + 1)]
+            ext = [0.0 for i in range(diff + 1)]
 
             for i in range(other.degree + 1):
                 for j in range(self.degree+1):
@@ -40,7 +42,7 @@ class Polynomial:
                 ret.koef[i] *= other
         elif isinstance(other, Polynomial):
             diff = other.degree + ret.degree
-            ext = [0 for i in range(diff + 1)]
+            ext = [0.0 for i in range(diff + 1)]
 
             for i in range(other.degree + 1):
                 for j in range(ret.degree + 1):
@@ -68,7 +70,7 @@ class Polynomial:
             if other.degree > self.degree:
                 diff = other.degree - self.degree
                 self.degree += diff
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(self.koef)
                 self.koef = ext
 
@@ -88,7 +90,7 @@ class Polynomial:
             if other.degree > ret.degree:
                 diff = other.degree - ret.degree
                 ret.degree += diff
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(ret.koef)
                 ret.koef = ext
 
@@ -99,7 +101,7 @@ class Polynomial:
             elif other.degree < ret.degree:
                 buf = other.koef
                 diff = ret.degree - other.degree
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(buf)
                 i = ret.degree
                 while i != -1:
@@ -121,7 +123,7 @@ class Polynomial:
             if other.degree > self.degree:
                 diff = other.degree - self.degree
                 self.degree += diff
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(self.koef)
                 self.koef = ext
 
@@ -141,13 +143,13 @@ class Polynomial:
             if other.degree > ret.degree:
                 diff = other.degree - ret.degree
                 ret.degree += diff
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(ret.koef)
                 ret.koef = ext
             elif other.degree < ret.degree:
                 buf = other.koef
                 diff = ret.degree - other.degree
-                ext = [0 for i in range(diff)]
+                ext = [0.0 for i in range(diff)]
                 ext.extend(buf)
             else:
                 ext = other.koef
@@ -163,11 +165,11 @@ class Polynomial:
     def up_degree(self) :
         """...or multiplication polynomial by x"""
         self.degree += 1
-        self.koef.append(0)
+        self.koef.append(0.0)
 
     def get(self, x):
         """Substitution x"""
-        res = 0
+        res = 0.0
         for i in range(self.degree + 1):
             res += (self.koef[i] * (x ** (self.degree - i)))
         return res
