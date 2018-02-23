@@ -42,12 +42,50 @@ def broken_evident(x, func):
     return y
 
 
-def calc(ns, a, b, h, func):
+def runge_kutta_second(x, alpha, h, func):
+
+   # assert(alpha == 0.5 or alpha == 1, "Alpha должна быть равно 1 или 0.5")
+
+    y = 0
+    t = 0
+
+    while t <= x:
+        f = h * ((1 - alpha) * func(t, y) +
+                 alpha * func(t + h / (2 * alpha),
+                              y + (h / (2 * alpha)) * func(t, y)))
+
+        y += f
+        t += h
+
+    return y
+
+
+def runge_kutta_fourth(x, h, func):
+    y = 0
+    t = 0
+
+    while t <= x:
+        k1 = func(t, y)
+        k2 = func(t + h / 2, y + h / 2 * k1)
+        k3 = func(t + h / 2, y + h / 2 * k2)
+        k4 = func(t + h, y + h * k3)
+
+        f = h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+
+        y += f
+        t += h
+
+    return y
+
+
+def calc(ns, a, b, h, alpha, func):
     table_picard = PrettyTable()
     title = ["X"]
     for it in ns:
         title.append("Пикар: {0}-я итерация".format(it))
     title.append("Метод ломанной (явный)")
+    title.append("Метод Рунге-Кутты 2-ого порядка (неявный)")
+    title.append("Метод Рунге-Кутты 4-ого порядка")
 
     table_picard.field_names = title
 
@@ -58,22 +96,30 @@ def calc(ns, a, b, h, func):
         u.insert(0, round(x, 3))
         bevi = broken_evident(x, func)
         u.append(bevi)
+        rks = runge_kutta_second(x, alpha, h, func)
+        u.append(rks)
+        rkf = runge_kutta_fourth(x, h, func)
+        u.append(rkf)
         table_picard.add_row(u)
 
     u = picard(ns, b, func, pol=True)
     u.insert(0, round(b, 3))
-    bevi = broken_evident(x, func)
+    bevi = broken_evident(b, func)
     u.append(bevi)
+    rk = runge_kutta_second(b, alpha, h, func)
+    u.append(rk)
+    rkf = runge_kutta_fourth(b, h, func)
+    u.append(rkf)
     table_picard.add_row(u)
 
     print(table_picard)
 
 
 if __name__ == "__main__":
-    #print(">>>>> МЕТОД ПИКАРА <<<<<")
     x1 = int(input("Введите X: от "))
     x2 = int(input(" " * 11 + "до "))
     h = float(input(" " * 6 + "с шагом "))
     nl = input("Введите через пробел интересующие итерации для метода  Пикара: ").split(" ")
+    a = float(input("Введите α для метода Рунге-Кутты второго порядка: "))
     nl = list(map(lambda x: int(x), nl))
-    calc(nl, x1, x2, h, test_func)
+    calc(nl, x1, x2, h, a, test_func)
