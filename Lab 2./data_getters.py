@@ -1,6 +1,6 @@
 class Data:
     t_0 = 0
-    t_n = 0.0003
+    t_n = 3e-7
     l_e = 12        # Distance between lamp electrodes
     Rad = 0.35        # Radius of the tube (upper bound of the integral)
     p_0 = 0.5
@@ -10,10 +10,10 @@ class Data:
     C_k = 150e-6    # Capacitance capacity
     R_k = 0.2       # Resistance
     U_0 = 1500      # The capacitor voltage at the initial time
-    I_0 = 1         # The current strength of the circuit at the initial time
-    tau = 10e-6
-    eps = 10e-2
-    p = [5, 15, 25]
+    I_0 = 1      # The current strength of the circuit at the initial time
+    tau = 1e-7
+    eps = 1e-4
+    p = [3.5, 15, 25]
 
     @staticmethod
     def get_table_I_T0():

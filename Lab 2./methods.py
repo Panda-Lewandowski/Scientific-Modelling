@@ -9,7 +9,7 @@ def Runge_Kutta_IV_3var_1step(f, phi, x0, y0, z0, h):
     p3 = phi(x0 + h / 2, y0 + k2 * h / 2, z0 + p2 * h / 2)
 
     k4 = f(x0 + h / 2, y0 + k3 * h, z0 + p3 * h)
-    p4 = phi(x0 + h / 2, y0 + k3 * h, z0 + p3)
+    p4 = phi(x0 + h / 2, y0 + k3 * h, z0 + p3 * h)
 
     yn = y0 + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
     zn = z0 + h / 6 * (p1 + 2 * p2 + 2 * p3 + p4)
@@ -19,7 +19,6 @@ def Runge_Kutta_IV_3var_1step(f, phi, x0, y0, z0, h):
 
 def simpson(func, left, right, n, *args):
     h = (right - left) / n
-
     ans = h / 3
     even = 0.0
     odd = 0.0
