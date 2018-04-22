@@ -4,7 +4,6 @@ from numpy import arange
 import matplotlib.pyplot as plt
 
 
-
 def left_boundary_conditions():
     k1 = Data.k(Data.x0 + Data.h)
     alpha_half = Data.alpha(Data.x0 + Data.h / 2)

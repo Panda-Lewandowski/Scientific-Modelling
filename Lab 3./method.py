@@ -18,9 +18,7 @@ def thomas_algorithm(A, B, C, D, K0, M0, P0, KN, MN, PN):  # Tridiagonal matrix 
     y = [(PN - MN * eta[-1]) / (KN + MN * xi[-1])]
 
     for i in range(len(A) - 2, -1, -1):
-        y_i = xi[i + 1] * \
-              y[0] + \
-              eta[i + 1]
+        y_i = xi[i + 1] *  y[0] + eta[i + 1]
 
         y.insert(0, y_i)
 
