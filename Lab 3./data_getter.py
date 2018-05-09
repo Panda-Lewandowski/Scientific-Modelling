@@ -3,16 +3,17 @@ class Data:
     l = 10           # Length of the rod (cm)
     R = 0.5          # Radius of the rod (cm)
     Tenv = 300       # Ambient temperature (K)
-    F0 = 100         # Heat flux density (W / (cm^2 * K))
-    k0 = 0.1         # Coefficient of thermal conductivity at the beginning of the rod (W / (cm * K))
-    kN = 0.2         # Coefficient of thermal conductivity at the end of the rod (W / (cm * K))
+    F0 = 100        # Heat flux density (W / (cm^2 * K))
+    k0 = 0.2         # Coefficient of thermal conductivity at the beginning of the rod (W / (cm * K))
+    kN = 0.5         # Coefficient of thermal conductivity at the end of the rod (W / (cm * K))
     alpha0 = 1e-2    # Heat transfer coefficient at the beginning of the rod (W / (cm^2 * K))
-    alphaN = 0.9e-2  # Heat transfer coefficient at the end of the rod (W / (cm^2 * K))
+    alphaN = 9e-3  # Heat transfer coefficient at the end of the rod (W / (cm^2 * K))
     h = 1e-2
-    ak = (kN * l * k0) / (k0 - kN)
     bk = (kN * l) / (kN - k0)
-    a_alpha = (alphaN * l * alpha0) / (alpha0 - alphaN)
+    ak = - k0 * bk
     b_alpha = (alphaN * l) / (alphaN - alpha0)
+    a_alpha = - alpha0 * b_alpha
+
 
     @staticmethod
     def k(x):

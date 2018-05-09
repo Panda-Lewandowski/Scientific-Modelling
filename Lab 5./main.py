@@ -2,6 +2,8 @@ from data_getter import Data
 from method import fixed_point_iteration
 from math import fabs
 from numpy import arange
+from copy import deepcopy
+from matplotlib import pyplot as plot
 
 
 def left_boundary_conditions():
@@ -22,13 +24,13 @@ def left_boundary_conditions():
     M0 = Data.tau * (Data.h / 8 * p_half - X_half / Data.h) + Data.h / 8 * C_half
 
     P0 = Data.tau * Data.F0 + Data.tau * Data.h / 8 * (3 * f0 + f1) + \
-        Data.h / 4 * C0 * Data.T_curr[Data.x0] + \
-        Data.h / 8 * C_half * (Data.T_curr[Data.x0] + Data.T_curr[Data.x0 + Data.h])
+        Data.h / 4 * C0 * Data.T_past[Data.x0] + \
+        Data.h / 8 * C_half * (Data.T_past[Data.x0] + Data.T_past[Data.x0 + Data.h])
 
     return K0, M0, P0
 
 
-def right__boundary_conditions():
+def right_boundary_conditions():
     # relative to the current temperature
     X_half = Data.Xn_minus_half(Data.l)
     pN = Data.p(Data.l)
@@ -46,8 +48,8 @@ def right__boundary_conditions():
     MN = Data.tau * (X_half / Data.h - Data.h / 8 * p_half) + Data.h / 8 * C_half
 
     PN = - Data.alphaN * Data.Tenv * Data.tau - Data.tau * Data.h / 8 * (3 * fN + fN1) + \
-        Data.h / 4 * CN * Data.T_curr[Data.l] + \
-        Data.h / 8 * C_half * (Data.T_curr[Data.l] + Data.T_curr[Data.l - Data.h])
+        Data.h / 4 * CN * Data.T_past[Data.l] + \
+        Data.h / 8 * C_half * (Data.T_past[Data.l] + Data.T_past[Data.l - Data.h])
 
     return KN, MN, PN
 
@@ -64,7 +66,7 @@ def calc_coefficients():
         An = Data.tau * Data.Xn_minus_half(i) / Data.h
         Dn = Data.tau * Data.Xn_plus_half(i) / Data.h
         Bn = An + Dn + Data.p(i) * Data.h * Data.tau + Data.C(i) * Data.h
-        Fn = Data.C(i) * Data.h * Data.T_curr[i] + Data.f(i) * Data.h * Data.tau
+        Fn = Data.C(i) * Data.h * Data.T_past[i] + Data.f(i) * Data.h * Data.tau
 
         A.append(An)
         B.append(Bn)
@@ -105,30 +107,41 @@ def distribute_temperature(T):
 
 
 if __name__ == "__main__":
-    a, b, c, d = calc_coefficients()
-    k0, m0, p0 = left_boundary_conditions()
-    kN, mN, pN = right__boundary_conditions()
 
-    T_prev = get_values_from_dict(Data.T_curr)
+    T_old = get_values_from_dict(Data.T_curr)
+    xs = list(Data.T_curr.keys())
+    plot.plot(xs, T_old)
+
+    step = 0
 
     while True:
-        while True:
-            T = fixed_point_iteration(a, b, c, d, k0, m0, p0, kN, mN, pN)
-            diff = calc_changes(get_values_from_dict(Data.T_curr), T)
-            m = max(diff)
-            if m / T[diff.index(m)] < Data.eps:
-                break
-            else:
-                Data.T_curr = distribute_temperature(T)
-                a, b, c, d = calc_coefficients()
-                k0, m0, p0 = left_boundary_conditions()
-                kN, mN, pN = right__boundary_conditions()
+        T_new = deepcopy(T_old)
+        Data.T_past = distribute_temperature(T_old)
 
-        diff = calc_changes(T, T_prev)
+        while True:
+            T_old = deepcopy(T_new)
+
+            a, b, c, d = calc_coefficients()
+            k0, m0, p0 = left_boundary_conditions()
+            kN, mN, pN = right_boundary_conditions()
+            T_new = fixed_point_iteration(a, b, c, d, k0, m0, p0, kN, mN, pN)
+
+            diff = calc_changes(T_old, T_new)
+            m = max(diff)
+            if m / T_new[diff.index(m)] < Data.eps:
+                Data.T_curr = distribute_temperature(T_new)
+                step += 1
+                print(T_new)
+                if step // 25 == 0:
+                    plot.plot(xs, T_new)
+                break
+
+        diff = calc_changes(get_values_from_dict(Data.T_past), T_new)
         m = max(diff)
-        if m / T[diff.index(m)] < Data.eps:
+        if m / T_new[diff.index(m)] < Data.eps:
+            Data.T_past = distribute_temperature(T_old)
             break
-        else:
-            Data.t_curr += Data.tau
-            T_prev = get_values_from_dict(Data.T_curr)
-            print(T_prev)
+    print(step)
+    plot.savefig('T.png', format='png')
+    plot.show()
+

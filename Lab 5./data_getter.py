@@ -9,16 +9,18 @@ class Data:
     Tenv = 300       # Ambient temperature (K)
     F0 = 100         # Heat flux density (W / (cm^2 * K))
     alpha0 = 1e-2    # Heat transfer coefficient at the beginning of the rod (W / (cm^2 * K))
-    alphaN = 0.9e-2  # Heat transfer coefficient at the end of the rod (W / (cm^2 * K))
+    alphaN = 9e-3  # Heat transfer coefficient at the end of the rod (W / (cm^2 * K))
     h = 1e-2
-    tau = 1e-2
+    tau = 1
     eps = 1e-3
-    rounding = 2
-    a_alpha = (alphaN * l * alpha0) / (alpha0 - alphaN)
+    rounding = 4
     b_alpha = (alphaN * l) / (alphaN - alpha0)
+    a_alpha = - alpha0 * b_alpha
 
-    T_curr = {round(x, 2): 300 for x in arange(x0, l+h, h)}
+    T_curr = {round(x, 4): 300 for x in arange(x0, l+h, h)}
     t_curr = 0
+
+    T_past = None
 
     @staticmethod
     def get_table_of_heat_cap():
@@ -69,7 +71,6 @@ class Data:
     @staticmethod
     def k(x):
         if x in Data.T_curr.keys():
-
             T = Data.T_curr[x]
         else:
             T = two_d_interpolation(Data.T_curr, x)

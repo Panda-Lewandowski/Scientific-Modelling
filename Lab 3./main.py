@@ -5,35 +5,33 @@ import matplotlib.pyplot as plt
 
 
 def left_boundary_conditions():
-    k1 = Data.k(Data.x0 + Data.h)
-    alpha_half = Data.alpha(Data.x0 + Data.h / 2)
-
-    X_half = (2 * Data.k0 * k1) / (Data.k0 + k1)
-    p_half = (2 * alpha_half) / Data.R
-    f_half = (2 * alpha_half) / Data.R * Data.Tenv
+    X_half = Data.Xn_plus_half(Data.x0)
+    p1 = Data.p(Data.x0 + Data.h)
+    f1 = Data.f(Data.x0 + Data.h)
 
     p0 = Data.p(Data.x0)
     f0 = Data.f(Data.x0)
 
-    K0 = X_half + Data.h ** 2 / 8 * p_half + Data.h ** 2 / 4 * p0
-    M0 = Data.h ** 2 / 8 * p_half - X_half
-    P0 = Data.h * Data.F0 + Data.h ** 2 / 4 * (f0 + f_half)
+    p_half = (p0 + p1) / 2
+
+    K0 = X_half + Data.h * Data.h * p_half / 8 + Data.h * Data.h * p0 / 4
+    M0 = Data.h * Data.h * p_half / 8 - X_half
+    P0 = Data.h * Data.F0 + Data.h * Data.h * (3 * f0 + f1) / 4
 
     return K0, M0, P0
 
 
 def right__boundary_conditions():
     X_half = Data.Xn_minus_half(Data.l)
+
     pN = Data.p(Data.l)
     pN1 = Data.p(Data.l - Data.h)
     fN = Data.f(Data.l)
-    fN1 = (2 * Data.alpha(Data.l - Data.h / 2)) / Data.R * Data.Tenv
+    fN1 = (2 * Data.alpha(Data.l - Data.h)) / Data.R * Data.Tenv
 
-    KN = - X_half - Data.h ** 2 / 16 * pN1 - 5 * Data.h ** 2 / 16 * pN
-        # Data.a_alpha / Data.Tenv + Data.a_alpha / Data.b_alpha
-
-    MN = X_half - Data.h ** 2 / 16 * pN1 - Data.h ** 2 / 16 * pN
-    PN = Data.h * Data.a_alpha - Data.h ** 2 / 4 * (fN - fN1)
+    KN = - (X_half + Data.alphaN * Data.h) / Data.h - Data.h * (5 * pN + pN1) / 16
+    MN = X_half / Data.h - Data.h * (pN + pN1) / 16
+    PN = - Data.alphaN * Data.Tenv - Data.h * (3 * fN + fN1) / 8
 
     return KN, MN, PN
 
@@ -76,6 +74,7 @@ if __name__ == "__main__":
     # print(pN)
 
     T = thomas_algorithm(a, b, c, d, k0, m0, p0, kN, mN, pN)
+    print(T)
     x = arange(Data.x0, Data.l, Data.h)
 
     plt.title('Heating the rod')
